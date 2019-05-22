@@ -1,0 +1,38 @@
+.setup {
+    padding: 40px;
+    border: 3px solid lightgray;
+    border-radius: 10px;
+    font-size: 20px;
+
+    h1 {
+        margin-top: 0;
+    }
+
+    hr {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .player {
+        margin-bottom: 10px;
+
+        & + .player {
+            padding-top: 10px;
+            border-top: 1px dashed lightgray;
+        }
+    }
+
+    input {
+        padding: 3px 10px;
+        border: 1px solid lightgray;
+        font-family: 'Shadows Into Light', cursive;
+        font-size: 18px;
+        line-height: 16px;
+
+        &:active,
+        &:focus {
+            border-color: red;
+            outline: none;
+        }
+    }
+}

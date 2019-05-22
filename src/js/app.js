@@ -6,12 +6,16 @@ function loopIndex(array, current, step) {
 }
 
 class Player {
-    constructor(scoreDOM) {
+    constructor(options) {
+        this.options = Object.assign({}, options);
         this.score = 0;
         this.player = {
-            name: 'Michiel',
-            color: "#ff000"
+            name: this.options.name,
+            color: this.options.color
         };
+    }
+
+    assignDOM(scoreDOM) {
         this.DOM = scoreDOM;
         this.renderScore();
     }
@@ -22,7 +26,15 @@ class Player {
     }
 
     renderScore() {
-        this.DOM.textContent = this.score.toString();
+        this.DOM.style.flexGrow = this.score + 1;
+    }
+
+    unsetAsActivePlayer() {
+        this.DOM.classList.remove('active');
+    }
+
+    setAsActivePlayer() {
+        this.DOM.classList.add('active');
     }
 }
 
@@ -54,35 +66,38 @@ class Square {
 
     handleLineClick(line) {
         const position = this.positions[this.lines.indexOf(line)];
+        let winners = [];
         if(line.classList.contains('set')) {
             return false;
         }
         this.setActiveLine(line);
+        const win = this.checkWinner(this);
+        if(win) {
+            winners.push(this);
+        }
 
         if(this.neighbours[position]) {
-            this.handleNeighbour(position);
+            const neighbourWin = this.handleNeighbour(position);
+            if(neighbourWin) {
+                winners.push(this.neighbours[position]);
+            }
         }
 
-        const win = this.checkWinner(this);
-        if(!win) {
-            game.activePlayer = loopIndex(game.players, game.activePlayer, 1);
+        if(winners.length === 0) {
+            board.changePlayer();
         }
+
+        board.winningSquares(winners);
     }
 
     handleNeighbour(position) {
         const opposite = loopIndex(this.positions, this.positions.indexOf(position), 2);
         this.setActiveLine(this.neighbours[position].lines[opposite]);
-        this.checkWinner(this.neighbours[position]);
+        return this.checkWinner(this.neighbours[position]);
     }
 
     checkWinner(square) {
-        const winner = square.lines.filter(line => line.classList.contains('set')).length === 4;
-        if(winner) {
-            square.square.classList.add(`win-player-${game.activePlayer}`);
-            game.players[game.activePlayer].increaseScore();
-            return true;
-        }
-        return false;
+        return square.lines.filter(line => line.classList.contains('set')).length === 4;
     }
 
     setActiveLine(line) {
@@ -91,11 +106,10 @@ class Square {
 }
 
 
-class Game {
+class Board {
     constructor(options) {
         const defaultOptions = {
             grid: 3,
-            players: 2
         };
         this.options = Object.assign({}, defaultOptions, options);
         this.grid = this.options.grid ? this.options.grid : 3;
@@ -107,6 +121,7 @@ class Game {
 
         this.activePlayer = 0;
         this.players = this.setPlayers(this.options.players);
+        this.players[this.activePlayer].setAsActivePlayer();
     }
 
     createBoard() {
@@ -140,11 +155,14 @@ class Game {
         });
     }
 
-    setPlayers(amount) {
-        return [...Array(amount)].map(x => {
+    setPlayers(players) {
+        return players.map(player => {
             const scoreElement = document.createElement('span');
+            scoreElement.style.backgroundColor = player.player.color;
+            scoreElement.innerText = "It's your turn now";
             this.scoreBoard.append(scoreElement);
-            return new Player(scoreElement);
+            player.assignDOM(scoreElement);
+            return player;
         });
     }
 
@@ -162,12 +180,47 @@ class Game {
             left: this.findSquareOnPosition(square.row, square.col - 1)
         };
     }
+
+    changePlayer() {
+        this.players.forEach((player) => player.unsetAsActivePlayer());
+        this.activePlayer = loopIndex(this.players, this.activePlayer, 1);
+        this.players[this.activePlayer].setAsActivePlayer();
+    }
+
+    winningSquares(winners) {
+        winners.forEach((square) => {
+            this.players[this.activePlayer].increaseScore();
+            square.square.style.backgroundColor = this.players[this.activePlayer].player.color;
+        })
+    }
 }
 
+let board = null;
+const form = document.getElementById('setup-form');
+const setupGrid = form.querySelector('#setup-grid');
 
-const game = new Game({
-    grid: 3,
-    players: 2
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const settings = {
+        grid: form.querySelector('#setup-grid').value,
+        players: []
+    };
+
+    Array.from(form.querySelectorAll('.player')).forEach((player) => {
+        settings.players.push({
+            name: player.querySelector('input.player-name').value,
+            color: player.querySelector('input.player-color').value
+        });
+    });
+
+    board = new Board({
+        grid: parseInt(settings.grid),
+        players: settings.players.map((player) => new Player({name: player.name, color: player.color}))
+    });
+
+    form.remove();
 });
 
 

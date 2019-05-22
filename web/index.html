@@ -3,6 +3,46 @@
     <link rel="stylesheet" href="../dist/main.css">
 </head>
 <body>
+    <div class="setup">
+        <form id="setup-form" action="">
+            <h1>Kamertje verhuren</h1>
+            <hr/>
+            <div class="setup__players">
+                <div class="player">
+                    <div class="input">
+                        <label for="player-1-name">Player 1</label>
+                        <input type="text" class="player-name" id="player-1-name" name="player-1-name" autocomplete="off" required>
+                    </div>
+                    <div class="input">
+                        <label for="player-1-color">Pick a color</label>
+                        <input type="color" class="player-color" id="player-1-color" name="player-1-color" autocomplete="off" value="#f6b73c">
+                    </div>
+                </div>
+                <div class="player">
+                    <div class="input">
+                        <label for="player-2-name">Player 1</label>
+                        <input type="text" class="player-name" id="player-2-name" name="player-2-name" autocomplete="off" required>
+                    </div>
+                    <div class="input">
+                        <label for="player-2-color">Pick a color</label>
+                        <input type="color" class="player-color" id="player-2-color" name="player-2-color" autocomplete="off" value="#e66465">
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <div class="setup__grid">
+                <div class="input">
+                    <label for="setup-grid">Grid size</label>
+                    <input type="range" id="setup-grid" min="2" max="6">
+                </div>
+            </div>
+            <hr/>
+            <div class="setup__actions">
+                <input type="reset" value="reset">
+                <input type="submit" value="Play">
+            </div>
+        </form>
+    </div>
     <div id="game"></div>
     <script src="../dist/app.js"></script>
 </body>
