@@ -4,6 +4,7 @@
 </head>
 <body>
     <div class="setup">
+        <div class="sides"></div>
         <form id="setup-form" action="">
             <h1>Kamertje verhuren</h1>
             <hr/>
@@ -15,17 +16,17 @@
                     </div>
                     <div class="input">
                         <label for="player-1-color">Pick a color</label>
-                        <input type="color" class="player-color" id="player-1-color" name="player-1-color" autocomplete="off" value="#f6b73c">
+                        <input type="color" class="player-color" id="player-1-color" name="player-1-color" autocomplete="off" value="#f6b73c" tabindex="-1">
                     </div>
                 </div>
                 <div class="player">
                     <div class="input">
-                        <label for="player-2-name">Player 1</label>
+                        <label for="player-2-name">Player 2</label>
                         <input type="text" class="player-name" id="player-2-name" name="player-2-name" autocomplete="off" required>
                     </div>
                     <div class="input">
                         <label for="player-2-color">Pick a color</label>
-                        <input type="color" class="player-color" id="player-2-color" name="player-2-color" autocomplete="off" value="#e66465">
+                        <input type="color" class="player-color" id="player-2-color" name="player-2-color" autocomplete="off" value="#e66465" tabindex="-1">
                     </div>
                 </div>
             </div>
@@ -33,13 +34,14 @@
             <div class="setup__grid">
                 <div class="input">
                     <label for="setup-grid">Grid size</label>
-                    <input type="range" id="setup-grid" min="2" max="6">
+                    <input type="range" id="setup-grid" min="2" max="6" value="3">
+                    <span id="setup-grid__preview">3</span>
                 </div>
             </div>
             <hr/>
             <div class="setup__actions">
                 <input type="reset" value="reset">
-                <input type="submit" value="Play">
+                <input type="submit" value="play">
             </div>
         </form>
     </div>

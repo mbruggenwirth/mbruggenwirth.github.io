@@ -122,6 +122,8 @@ class Board {
         this.activePlayer = 0;
         this.players = this.setPlayers(this.options.players);
         this.players[this.activePlayer].setAsActivePlayer();
+
+        this.total = 0;
     }
 
     createBoard() {
@@ -159,7 +161,7 @@ class Board {
         return players.map(player => {
             const scoreElement = document.createElement('span');
             scoreElement.style.backgroundColor = player.player.color;
-            scoreElement.innerText = "It's your turn now";
+            scoreElement.innerHTML = `<span>"It's your turn now"</span>`;
             this.scoreBoard.append(scoreElement);
             player.assignDOM(scoreElement);
             return player;
@@ -191,14 +193,51 @@ class Board {
         winners.forEach((square) => {
             this.players[this.activePlayer].increaseScore();
             square.square.style.backgroundColor = this.players[this.activePlayer].player.color;
+            this.checkEndGame();
         })
+    }
+    checkEndGame() {
+        this.total = this.total + 1;
+        if(this.total >= Math.pow(this.options.grid, 2)) {
+            const winner = Object.keys(this.players).reduce((a, b) => {
+                if(this.players[a].score === this.players[b].score) {
+                    return false;
+                }
+                return this.players[a].score > this.players[b].score ? this.players[a].DOM : this.players[b].DOM;
+            });
+
+            setTimeout(() => {
+                this.scoreBoard.classList.add('end');
+                this.gameBoard.classList.add('end');
+                if(winner) {
+                    winner.classList.add('winner');
+                } else {
+                    this.scoreBoard.classList.add('tie');
+                }
+            }, 500)
+        }
     }
 }
 
 let board = null;
 const form = document.getElementById('setup-form');
-const setupGrid = form.querySelector('#setup-grid');
+const setup = document.querySelector('.setup');
 
+Array.from(form.querySelectorAll('.player')).forEach((player) => {
+    const sides = setup.querySelector('.sides');
+    const side = document.createElement('span');
+    side.style.backgroundColor = player.querySelector('input.player-color').value;
+    sides.append(side);
+
+
+    player.querySelector('input.player-color').addEventListener('change', (e) => {
+        side.style.backgroundColor = e.target.value;
+    })
+});
+
+form.querySelector('#setup-grid').addEventListener('change', (e) => {
+    document.getElementById('setup-grid__preview').innerText = e.target.value;
+});
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -208,11 +247,11 @@ form.addEventListener('submit', (e) => {
         players: []
     };
 
-    Array.from(form.querySelectorAll('.player')).forEach((player) => {
-        settings.players.push({
+    settings.players = Array.from(form.querySelectorAll('.player')).map((player) => {
+        return {
             name: player.querySelector('input.player-name').value,
             color: player.querySelector('input.player-color').value
-        });
+        }
     });
 
     board = new Board({
@@ -220,7 +259,12 @@ form.addEventListener('submit', (e) => {
         players: settings.players.map((player) => new Player({name: player.name, color: player.color}))
     });
 
-    form.remove();
+    setup.remove();
 });
+
+// board = new Board({
+//     grid: 2,
+//     players: [new Player({name: 'michiel', color: '#ff0000'}), new Player({name: 'michiel', color: '#fff000'})]
+// });
 
 

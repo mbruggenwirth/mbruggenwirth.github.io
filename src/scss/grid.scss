@@ -2,6 +2,10 @@
 
 .grid {
     padding: 20px;
+
+    &.end {
+        opacity: 0;
+    }
 }
 
 .square {
