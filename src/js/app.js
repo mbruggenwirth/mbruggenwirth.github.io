@@ -161,8 +161,8 @@ class Board {
         return players.map(player => {
             const scoreElement = document.createElement('span');
             scoreElement.style.backgroundColor = player.player.color;
-            scoreElement.innerHTML = `<span>It's your turn now, ${player.player.name}</span>`;
-            scoreElement.setAttribute('data-winner', `Winner: ${player.player.name}` );
+            scoreElement.innerHTML = `<span>Het is nu jou beurt, ${player.player.name}</span>`;
+            scoreElement.setAttribute('data-winner', `Winnaar: ${player.player.name}` );
             this.scoreBoard.append(scoreElement);
             player.assignDOM(scoreElement);
             return player;
