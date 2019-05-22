@@ -161,7 +161,8 @@ class Board {
         return players.map(player => {
             const scoreElement = document.createElement('span');
             scoreElement.style.backgroundColor = player.player.color;
-            scoreElement.innerHTML = `<span>"It's your turn now"</span>`;
+            scoreElement.innerHTML = `<span>It's your turn now, ${player.player.name}</span>`;
+            scoreElement.setAttribute('data-winner', `Winner: ${player.player.name}` );
             this.scoreBoard.append(scoreElement);
             player.assignDOM(scoreElement);
             return player;
@@ -203,14 +204,14 @@ class Board {
                 if(this.players[a].score === this.players[b].score) {
                     return false;
                 }
-                return this.players[a].score > this.players[b].score ? this.players[a].DOM : this.players[b].DOM;
+                return this.players[a].score > this.players[b].score ? this.players[a] : this.players[b];
             });
 
             setTimeout(() => {
                 this.scoreBoard.classList.add('end');
                 this.gameBoard.classList.add('end');
                 if(winner) {
-                    winner.classList.add('winner');
+                    winner.DOM.classList.add('winner');
                 } else {
                     this.scoreBoard.classList.add('tie');
                 }
@@ -219,52 +220,53 @@ class Board {
     }
 }
 
+
+function SetupBoard() {
+    const form = document.getElementById('setup-form');
+    const setup = document.querySelector('.setup');
+
+    Array.from(form.querySelectorAll('.player')).forEach((player) => {
+        const sides = setup.querySelector('.sides');
+        const side = document.createElement('span');
+        side.style.backgroundColor = player.querySelector('input.player-color').value;
+        sides.append(side);
+
+
+        player.querySelector('input.player-color').addEventListener('change', (e) => {
+            side.style.backgroundColor = e.target.value;
+        })
+    });
+
+    form.querySelector('#setup-grid').addEventListener('change', (e) => {
+        document.getElementById('setup-grid__preview').innerText = e.target.value;
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const settings = {
+            grid: form.querySelector('#setup-grid').value,
+            players: []
+        };
+
+        settings.players = Array.from(form.querySelectorAll('.player')).map((player) => {
+            return {
+                name: player.querySelector('input.player-name').value,
+                color: player.querySelector('input.player-color').value
+            }
+        });
+
+        board = new Board({
+            grid: parseInt(settings.grid),
+            players: settings.players.map((player) => new Player({name: player.name, color: player.color}))
+        });
+
+        setup.remove();
+    });
+}
+
 let board = null;
-const form = document.getElementById('setup-form');
-const setup = document.querySelector('.setup');
+SetupBoard();
 
-Array.from(form.querySelectorAll('.player')).forEach((player) => {
-    const sides = setup.querySelector('.sides');
-    const side = document.createElement('span');
-    side.style.backgroundColor = player.querySelector('input.player-color').value;
-    sides.append(side);
-
-
-    player.querySelector('input.player-color').addEventListener('change', (e) => {
-        side.style.backgroundColor = e.target.value;
-    })
-});
-
-form.querySelector('#setup-grid').addEventListener('change', (e) => {
-    document.getElementById('setup-grid__preview').innerText = e.target.value;
-});
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const settings = {
-        grid: form.querySelector('#setup-grid').value,
-        players: []
-    };
-
-    settings.players = Array.from(form.querySelectorAll('.player')).map((player) => {
-        return {
-            name: player.querySelector('input.player-name').value,
-            color: player.querySelector('input.player-color').value
-        }
-    });
-
-    board = new Board({
-        grid: parseInt(settings.grid),
-        players: settings.players.map((player) => new Player({name: player.name, color: player.color}))
-    });
-
-    setup.remove();
-});
-
-// board = new Board({
-//     grid: 2,
-//     players: [new Player({name: 'michiel', color: '#ff0000'}), new Player({name: 'michiel', color: '#fff000'})]
-// });
 
 

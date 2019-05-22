@@ -31,7 +31,7 @@
             font-size: 82px;
 
 
-            &::before { content: "Winner"; }
+            &::before { content: attr(data-winner); }
         }
     }
 
